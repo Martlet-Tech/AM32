@@ -1443,6 +1443,16 @@ void tenKhzRoutine()
                     stall_protection_adjust = 0;
                 }
             }
+            if (eepromBuffer.hiccup_mode && running && input > 47) {
+                if (commutation_interval > stall_protect_target_interval * 2
+                    && actual_current > (uint32_t)eepromBuffer.limits.current * 200) {
+                    allOff();
+                    running = 0;
+                    zero_crosses = 0;
+                    old_routine = 1;
+                    last_duty_cycle = min_startup_duty / 2;
+                }
+            }
             if (use_speed_control_loop && running) {
                 input_override += doPidCalculations(&speedPid, e_com_time, target_e_com_time);
                 if (input_override > 2047 * 10000) {
